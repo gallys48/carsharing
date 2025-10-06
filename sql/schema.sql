@@ -1,17 +1,20 @@
-drop table if exists "carsharing".customers;
-drop table if exists "carsharing".cars;
-drop table if exists "carsharing".rentals;
-drop table if exists "carsharing".payments;
+drop table if exists carsharing.payments;
+drop table if exists carsharing.rentals;
+drop table if exists carsharing.customers;
+drop table if exists carsharing.cars;
 
-create table if not exists "carsharing".customers(
+
+
+create table if not exists carsharing.customers(
 	id serial primary key,
 	fullname text not null,
 	phone varchar(10),
 	email text unique not null,
-	created_at timestamp default now()
+	created_at timestamp default now(),
+	updated_at timestamp
 );
 
-create table if not exists "carsharing".cars(
+create table if not exists carsharing.cars(
 	id serial primary key,
 	vin varchar(17) not null,
 	maker text not null,
@@ -24,10 +27,10 @@ create table if not exists "carsharing".cars(
 
 create type rental_status as enum ('active', 'returned', 'canceled');
 
-create table if not exists "carsharing".rentals(
+create table if not exists carsharing.rentals(
 	id serial primary key,
-	customer_id int not null references "carsharing".customers(id) on delete cascade,
-	car_id int not null references "carsharing".cars(id) on delete cascade,
+	customer_id int not null references carsharing.customers(id) on delete cascade,
+	car_id int not null references carsharing.cars(id) on delete cascade,
 	start_date date default now(),
 	expected_return_date date not null,
 	actual_return_date date,
@@ -37,7 +40,7 @@ create table if not exists "carsharing".rentals(
 	create_at timestamp default now()
 );
 
-create table if not exists "carsharing".payments(
+create table if not exists carsharing.payments(
 	id serial primary key,
 	rental_id int not null references "carsharing".rentals(id) on delete cascade,
 	payments_date date not null default now(),
@@ -46,3 +49,4 @@ create table if not exists "carsharing".payments(
 	status text not null check (status in ('pending', 'completed', 'failed')),
 	comment text
 )
+

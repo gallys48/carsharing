@@ -1,18 +1,18 @@
-drop procedure carsharing.add_customer;
+drop procedure carsharing.create_customer;
 drop procedure carsharing.update_customer;
 drop procedure carsharing.delete_customer;
 
-create or replace procedure carsharing.add_customer(c_fullname text, c_email text, c_phone text default null)
+create or replace procedure carsharing.create_customer(c_fullname text, c_email text, c_phone text default null)
 as $$
 begin 
-	if exists (select 1 from "carsharing".customers where fullname = c_fullname and email = c_email) then
-		raise exception 'Пользователь с таким именем и email уже создан';
+	if exists (select 1 from "carsharing".customers where email = c_email) then
+		raise exception 'Пользователь с таким email уже создан';
 	end if;
 
 	insert into "carsharing".customers(fullname, phone, email)
 	values (c_fullname, c_phone, c_email);
 
-	raise notice 'Пользователь % успешно создан', c_full_name;
+	raise notice 'Пользователь % успешно создан', c_fullname;
 end
 $$ language plpgsql;
 
@@ -42,9 +42,15 @@ begin
 		raise exception 'Такого пользователя не существует';
 	end if;
 
+	if exists (select 1 from carsharing.rentals where customer_id = c_id and status = 'active') then
+		raise exception 'Пользователя невозможного удалить. На него оформлена активная аренда.';
+	end if;
+
 	delete from carsharing.customers
 	where id = c_id;
 
 	raise notice 'Пользователь с id % удален', c_id;
 end
 $$ language plpgsql;
+
+call carsharing.create_customer('Вася', '2345@mail.ru', '+2312412')
