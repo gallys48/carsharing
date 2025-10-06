@@ -64,4 +64,17 @@ begin
 end
 $$ language plpgsql;
 
-call carsharing.delete_car(2)
+drop function carsharing.available_cars;
+
+create or replace function carsharing.available_cars()
+returns table("ID" int, "VIN" varchar, "Производитель" text, "Модель" text, "Цвет" text, "Год" int, "Дневная стоимость" numeric ) as $$
+begin
+	return query
+	select id, vin, maker, model, color, year, daily_rate
+	from carsharing.cars
+	where is_available = TRUE; 
+end;
+$$ LANGUAGE plpgsql;
+
+select * from carsharing.available_cars()
+call carsharing.create_car('asd123nasd','Mazda', '6', 2020)
