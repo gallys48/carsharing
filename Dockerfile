@@ -1,5 +1,11 @@
 FROM python:3.12-slim
+
 WORKDIR /app
-COPY . .
-RUN pip install psycopg pytest
-CMD ["pytest", "-q"]
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./tests ./tests
+COPY ./sql ./sql
+
+CMD ["pytest", "-v"]
