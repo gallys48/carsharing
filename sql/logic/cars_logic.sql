@@ -8,13 +8,13 @@ create or replace procedure carsharing.create_car(
 	c_maker text,
 	c_model text,
 	c_year int default null,
-	c_daily_rate int default 1000.00,
+	c_daily_rate numeric(10,2) default 1000.00,
 	c_is_available bool default true
 )
 as $$
 begin
 	-- Проверяем, существует ли ТС
-	if exists (select 1 from carsharing.cars where vin = c_vin) then
+	if exists (select 1 from carsharing.cars where vin = c_vin and sys_status = 1) then
 		raise exception 'Машина с vin % уже есть в базе.', c_vin;
 	end if;
 	
@@ -32,13 +32,13 @@ create or replace procedure carsharing.update_car(
 	c_maker text default null,
 	c_model text default null,
 	c_year int default null,
-	c_daily_rate int default 1000.00,
+	c_daily_rate numeric(10,2) default null,
 	c_is_available bool default true
 )
 as $$
 begin
 	-- Проверяем, существует ли ТС
-	if not exists (select 1 from carsharing.cars where id = c_id) then
+	if not exists (select 1 from carsharing.cars where id = c_id and sys_status = 1) then
 		raise exception 'Такой машины нет в базе';
 	end if;
 	
@@ -67,7 +67,7 @@ declare
 	v_model text;
 begin
 	-- Проверяем, существует ли ТС
-	if not exists (select 1 from carsharing.cars where id = c_id) then
+	if not exists (select 1 from carsharing.cars where id = c_id and sys_status = 1) then
 		raise exception 'Такой машины нет в базе.';
 	end if;
 	
@@ -82,14 +82,15 @@ begin
 	from carsharing.cars
 	where id = c_id;
 
-	delete from carsharing.cars
+	update carsharing.cars
+	set
+		sys_status = 0
 	where id = c_id;
 	
 	raise notice '% % (vin %) успешно удалена из базы.', v_maker, v_model, v_vin;
 end
 $$ language plpgsql;
 
-drop function carsharing.available_cars;
 
 -- Вывести список всех доступных для аренды авто
 create or replace function carsharing.available_cars()
@@ -106,10 +107,6 @@ begin
 	return query
 	select id, vin, maker, model, color, year, daily_rate
 	from carsharing.cars
-	where is_available = TRUE; 
+	where is_available = TRUE and sys_status = 1; 
 end;
 $$ LANGUAGE plpgsql;
-
-select * from carsharing.available_cars()
-
-call carsharing.create_car('asd123nasv','BMW', 'X5', 2020)

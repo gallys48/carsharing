@@ -11,8 +11,12 @@ create table if not exists carsharing.customers(
 	phone varchar(10), --телефон
 	email text unique not null, --почта
 	created_at timestamp default now(), --время создания
-	updated_at timestamp --время обновления
+	updated_at timestamp, --время обновления
+	sys_status int not null default 1 --системный статус
 );
+
+alter table carsharing.cars
+add column sys_status int not null default 1 
 
 create table if not exists carsharing.cars(
 	id serial primary key, -- сурогатный ключ
@@ -23,7 +27,9 @@ create table if not exists carsharing.cars(
 	year int, -- год выпуска
 	daily_rate numeric(10,2) not null default 1000.00, -- дневная ставка
 	is_available boolean not null default true, -- достуность авто
-	created_at timestamp default now() -- время создания
+	created_at timestamp default now(),-- время создания
+	updated_at timestamp, --время обновления
+	sys_status int not null default 1, --системный статус
 );
 
 
@@ -53,3 +59,4 @@ create table if not exists carsharing.payments(
 	payments_date date not null default now(), -- дата оплаты
 	amount numeric(10,2) not null check (amount > 0) -- количество внесенных средств
 )
+
