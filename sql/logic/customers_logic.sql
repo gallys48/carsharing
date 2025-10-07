@@ -2,9 +2,15 @@ drop procedure carsharing.create_customer;
 drop procedure carsharing.update_customer;
 drop procedure carsharing.delete_customer;
 
-create or replace procedure carsharing.create_customer(c_fullname text, c_email text, c_phone text default null)
+-- Создание автомобиля
+create or replace procedure carsharing.create_customer(
+	c_fullname text,
+	c_email text,
+	c_phone text default null
+)
 as $$
-begin 
+begin
+	-- Проверка существования пользователя 
 	if exists (select 1 from carsharing.customers where email = c_email) then
 		raise exception 'Пользователь email % уже создан', c_email;
 	end if;
@@ -16,13 +22,21 @@ begin
 end
 $$ language plpgsql;
 
-create or replace procedure carsharing.update_customer(c_id int, c_fullname text default null, c_email text default null, c_phone text default null)
+-- Обновление информации о пользователе
+create or replace procedure carsharing.update_customer(
+	c_id int,
+	c_fullname text default null,
+	c_email text default null,
+	c_phone text default null
+)
 as $$
-begin 
+begin
+	-- Проверка существования пользователя 
 	if not exists (select 1 from carsharing.customers where id = c_id) then
 		raise exception 'Такого пользователя не существует';
 	end if;
-
+	
+	-- Если новая информация null, то не обновляем
 	update carsharing.customers
 	set 
 		fullname = coalesce(c_fullname,fullname), 
@@ -35,29 +49,32 @@ begin
 end
 $$ language plpgsql;
 
+-- Удаление пользователя
 create or replace procedure carsharing.delete_customer(c_id int)
 as $$
 declare
-	c_fullname text;
-	c_email text;
-begin 
+	v_fullname text;
+	v_email text;
+begin
+	-- Проверка существования пользователя  
 	if not exists (select 1 from carsharing.customers where id = c_id) then
 		raise exception 'Такого пользователя не существует';
 	end if;
-
+	
+	-- Проверка существования оформленной аренды на пользовтеля
 	if exists (select 1 from carsharing.rentals where customer_id = c_id and status = 'active') then
 		raise exception 'Пользователя невозможного удалить. На него оформлена активная аренда.';
 	end if;
 	
-	select fullname, email into c_fullname, c_email
+	select fullname, email into v_fullname, v_email
 	from carsharing.customers
 	where id = c_id;
 
 	delete from carsharing.customers
 	where id = c_id;
 
-	raise notice 'Пользователь % (email %) успешно удален из базы', c_fullname, c_email;
+	raise notice 'Пользователь % (email %) успешно удален из базы', v_fullname, v_email;
 end
 $$ language plpgsql;
 
-call carsharing.updated_customer('Вася', '2345@mail.ru', '+2312412')
+call carsharing.create_customer('Петр', 'Petr@mail.ru')

@@ -1,6 +1,11 @@
 drop procedure if exists carsharing.pay_rent;
 
-create or replace procedure carsharing.pay_rent(c_rental_id int, c_amount numeric(10,2))
+call carsharing.pay_rent(15, 1800)
+
+create or replace procedure carsharing.pay_rent(
+	c_rental_id int, 
+	c_amount numeric(10,2)
+)
 as $$
 declare
 	before_remains_amount numeric(10,2);
@@ -42,16 +47,33 @@ begin
 	
 	if after_remains_amount > 0 then
 		raise notice 'Осталось оплатить % рублей.', after_remains_amount;
-	else
-		update carsharing.rentals
-		set 
-			status = 'active'
-		where id = c_rental_id;
-		raise notice 'Полная оплата получена. Можете пользоваться транспортом!';
 	end if;
 end
 $$ language plpgsql;
 
-delete from rom
+-- Триггер на активации аренды в случае полной оплаты
+create or replace function carsharing.activate_rental_when_fully_paid()
+returns trigger as $$
+begin
+    -- Проверяем, что запись обновилась и полностью оплачена
+    if NEW.total_amount >= NEW.amount and OLD.total_amount < OLD.amount then
+        update carsharing.rentals
+        set status = 'active'
+        where id = NEW.id;
+
+        raise notice 'Аренда % активирована: сумма оплачена полностью.', NEW.id;
+    end if;
+
+    return NEW;
+end;
+$$ language plpgsql;
+
+create or replace trigger trg_activate_rental_when_fully_paid
+after update
+on carsharing.rentals
+for each row
+when (NEW.total_amount >= NEW.amount and OLD.status <> 'active')
+execute function carsharing.activate_rental_when_fully_paid();
+
 
 call carsharing.pay_rent(13, 100)

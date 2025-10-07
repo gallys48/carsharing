@@ -2,9 +2,18 @@ drop procedure if exists carsharing.create_car;
 drop procedure if exists carsharing.update_car;
 drop procedure if exists carsharing.delete_car;
 
-create or replace procedure carsharing.create_car(c_vin text, c_maker text, c_model text, c_year int default null, c_daily_rate int default 1000.00, c_is_available bool default true)
+-- Создание ТС
+create or replace procedure carsharing.create_car(
+	c_vin text,
+	c_maker text,
+	c_model text,
+	c_year int default null,
+	c_daily_rate int default 1000.00,
+	c_is_available bool default true
+)
 as $$
 begin
+	-- Проверяем, существует ли ТС
 	if exists (select 1 from carsharing.cars where vin = c_vin) then
 		raise exception 'Машина с vin % уже есть в базе.', c_vin;
 	end if;
@@ -16,13 +25,24 @@ begin
 end
 $$ language plpgsql;
 
-create or replace procedure carsharing.update_car(c_id int, c_vin text default null, c_maker text default null, c_model text default null, c_year int default null, c_daily_rate int default 1000.00, c_is_available bool default true)
+--  Обновление информации о ТС
+create or replace procedure carsharing.update_car(
+	c_id int,
+	c_vin text default null,
+	c_maker text default null,
+	c_model text default null,
+	c_year int default null,
+	c_daily_rate int default 1000.00,
+	c_is_available bool default true
+)
 as $$
 begin
+	-- Проверяем, существует ли ТС
 	if not exists (select 1 from carsharing.cars where id = c_id) then
 		raise exception 'Такой машины нет в базе';
 	end if;
 	
+	-- Если новая информация null, то не обновляем
 	update carsharing.cars
 	set 
 		vin = coalesce(c_vin, vin),
@@ -38,36 +58,50 @@ begin
 end
 $$ language plpgsql;
 
+-- Удаление ТС
 create or replace procedure carsharing.delete_car(c_id int)
 as $$
 declare
-	c_vin text;
-	c_maker text;
-	c_model text;
+	v_vin text;
+	v_maker text;
+	v_model text;
 begin
+	-- Проверяем, существует ли ТС
 	if not exists (select 1 from carsharing.cars where id = c_id) then
 		raise exception 'Такой машины нет в базе.';
 	end if;
-
-	if exists (select 1 from carsharing.rentals where car_id = c_id and status = 'active') then
+	
+	-- Проверяем, арендовано ли на текущий момент данное ТС?
+	if exists (select 1 from carsharing.rentals 
+			where car_id = c_id and status = 'active'
+	) then
 		raise exception 'Невозможно удалить. Данная машина еще арендована.';
 	end if;
 	
-	select vin, maker, model into c_vin, c_maker, c_model
+	select vin, maker, model into v_vin, v_maker, v_model
 	from carsharing.cars
 	where id = c_id;
 
 	delete from carsharing.cars
 	where id = c_id;
 	
-	raise notice '% % (vin %) успешно удалена из базы.', c_maker, c_model, c_vin;
+	raise notice '% % (vin %) успешно удалена из базы.', v_maker, v_model, v_vin;
 end
 $$ language plpgsql;
 
 drop function carsharing.available_cars;
 
+-- Вывести список всех доступных для аренды авто
 create or replace function carsharing.available_cars()
-returns table("ID" int, "VIN" varchar, "Производитель" text, "Модель" text, "Цвет" text, "Год" int, "Дневная стоимость" numeric ) as $$
+returns table(
+	"ID" int,
+	"VIN" varchar,
+	"Производитель" text,
+	"Модель" text,
+	"Цвет" text,
+	"Год" int,
+	"Дневная стоимость" numeric
+) as $$
 begin
 	return query
 	select id, vin, maker, model, color, year, daily_rate
@@ -77,4 +111,5 @@ end;
 $$ LANGUAGE plpgsql;
 
 select * from carsharing.available_cars()
-call carsharing.create_car('asd123nasd','Mazda', '6', 2020)
+
+call carsharing.create_car('asd123nasv','BMW', 'X5', 2020)
