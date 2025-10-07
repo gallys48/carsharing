@@ -31,6 +31,10 @@ begin
 		raise exception 'Машина id % не доступна для аренды.', r_car_id;
 	end if;
 
+	-- Проверяем корректность дат
+	if r_expected_return_date < r_start_date then
+		raise exception 'Дата окончания аренды должна быть больше даты начала.';
+
 	-- Проверяем, что у пользователя нет активной аренды
 	if exists (select 1 from carsharing.rentals 
 				where customer_id = r_customer_id 

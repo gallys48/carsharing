@@ -12,12 +12,3 @@ def db_connection():
     )
     yield conn
     conn.close()
-
-@pytest.fixture(autouse=True)
-def clean_db(db_connection):
-    # очищаем все таблицы перед каждым тестом
-    with db_connection.cursor() as cur:
-        cur.execute("""
-            TRUNCATE carsharing.payments, carsharing.rentals, carsharing.cars, carsharing.customers RESTART IDENTITY CASCADE;
-        """)
-        db_connection.commit()
