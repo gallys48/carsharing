@@ -19,6 +19,29 @@
 
 ![Схема БД](images/schema.png)
 
+## Описание схемы
+
+Таблица Пользователь
+-	id serial primary key, --сурогатный ключ
+-	fullname text not null, --имя
+-	phone varchar(10), --телефон
+-	email text unique not null, --почта
+-	created_at timestamp default now(), --время создания
+-	updated_at timestamp, --время обновления
+-	sys_status int not null default 1 --системный статус
+
+Таблица Машины
+- id (сурогатный ключ);
+- vin (идентификатор машины);
+- maker text not null, -- производитель
+- model text not null, -- модель
+-	color text, -- цвет
+-	year int, -- год выпуска
+-	daily_rate numeric(10,2) not null default 1000.00, -- дневная ставка
+-	is_available boolean not null default true, -- достуность авто
+-	created_at timestamp default now(),-- время создания
+-	updated_at timestamp, --время обновления
+-	sys_status int not null default 1 --системный статус
 ---
 
 ## Структура проекта
@@ -104,6 +127,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
