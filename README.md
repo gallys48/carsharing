@@ -42,9 +42,9 @@ conftest.py — фикстуры Pytest, очистка БД перед кажд
 
 ---
 
-## ⚙️ Запуск проекта
+## Запуск проекта
 
-### 1️⃣ Требования
+### Требования
 
 | Компонент | Версия |
 |------------|--------|
@@ -55,7 +55,7 @@ conftest.py — фикстуры Pytest, очистка БД перед кажд
 
 ---
 
-### 2️⃣ Запуск PostgreSQL в Docker
+### Запуск PostgreSQL в Docker
 
 Собери и запусти контейнер с базой данных:
 
@@ -72,7 +72,7 @@ docker compose up -d --build
 
 ---
 
-### 2️⃣ Подключение к базе данных
+### Подключение к базе данных
 
 | Параметр | Значение |
 |------------|--------|
@@ -82,7 +82,13 @@ docker compose up -d --build
 | User | postgres |
 |Password| postgres |
 
+Можно подключиться через DBeaver, pgAdmin или в терминале:
+
+```bash
+docker exec -it carsharing_db psql -U postgres -d carsharing
+```
 ---
+
 
 
 
