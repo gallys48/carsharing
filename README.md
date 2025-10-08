@@ -1,5 +1,4 @@
 # Carsharing — система аренды автомобилей
----
 # Оглавление
 
 - [Описание проекта](#Описание-проекта)
@@ -98,6 +97,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
