@@ -70,6 +70,19 @@ docker compose up -d --build
 - создается вся бизнес-логика;
 - выполняются тесты из папки tests.
 
+---
+
+### 2️⃣ Подключение к базе данных
+
+| Параметр | Значение |
+|------------|--------|
+| Host | localhost |
+| Port | 5433 |
+| Database | carsharing |
+| User | postgres |
+|Password| postgres |
+
+---
 
 
 
