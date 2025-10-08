@@ -25,6 +25,7 @@ carsharing/
 │ ├── test_rentals.py
 │ └── test_payments.py
 └── README.md
+```
 ---
 
 ## ⚙️ Запуск проекта
@@ -46,4 +47,5 @@ carsharing/
 
 ```bash
 docker compose up -d --build
+
 
