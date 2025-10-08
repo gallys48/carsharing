@@ -105,7 +105,8 @@ begin
 	update carsharing.rentals
 	set 
 		expected_return_date = r_new_expected_return_date,
-		amount = v_new_amount
+		amount = v_new_amount,
+		updated_at = now()
 	where id = r_rental_id;
 	
 	raise notice 'Аренда % продлена до %.', r_rental_id, r_new_expected_return_date;
@@ -149,7 +150,8 @@ begin
 	    set 
 	        actual_return_date = r_actual_return_date,
 	        amount = 0,
-	        status = 'canceled'
+	        status = 'canceled',
+			updated_at = now()
 	    where id = r_rental_id;
 		
 		update carsharing.cars
@@ -180,7 +182,8 @@ begin
     set 
         actual_return_date = r_actual_return_date,
         amount = v_final_amount,
-        status = 'canceled'
+        status = 'canceled',
+		updated_at = now()
     where id = r_rental_id;
 
     -- Машину делаем снова доступной

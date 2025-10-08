@@ -41,7 +41,8 @@ begin
 	-- Обновляем общую сумму оплаты за арнду
 	update carsharing.rentals
 	set 
-		total_amount = total_amount+c_amount
+		total_amount = total_amount+c_amount,
+		updated_at = now()
 	where id = c_rental_id;
 
 	raise notice 'Оплата прошла успешно.';

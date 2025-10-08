@@ -42,7 +42,8 @@ create table if not exists carsharing.rentals(
 	amount numeric(12,2) default 0, -- всего к оплате
 	total_amount numeric(12,2) default 0, -- сколько оплачено на данный момент
 	status rental_status not null default 'reserved', -- статус аренды (изначально машина резервируется для аренды)
-	create_at timestamp default now() -- время создания
+	create_at timestamp default now(), -- время создания
+	updated_at timestamp default now(), -- время обновления
 );
 
 
