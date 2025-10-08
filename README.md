@@ -125,7 +125,7 @@ conftest.py — фикстуры Pytest, очистка БД перед кажд
 
 ## Запуск PostgreSQL в Docker
 
-Собери и запусти контейнер с базой данных:
+Собераем и запускаем контейнер с базой данных:
 
 ```bash
 docker compose up -d --build
@@ -150,12 +150,15 @@ docker compose up -d --build
 | User | postgres |
 |Password| postgres |
 
+Порт 5433 прокидывается на случай занятого 5432.
+
 Можно подключиться через DBeaver, pgAdmin или в терминале:
 
 ```bash
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
