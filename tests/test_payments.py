@@ -23,7 +23,7 @@ def create_rental(cur):
     customer_id = cur.fetchone()[0]
 
     # Создаём авто
-    cur.execute("CALL carsharing.create_car('13123', 'Toyota', 'Camry', 2020, 2000, TRUE);")
+    cur.execute("CALL carsharing.create_car('13123', 'Toyota', 'Camry', 'Red', 2020, 2000, TRUE);")
     cur.execute("SELECT id FROM carsharing.cars WHERE vin='13123';")
     car_id = cur.fetchone()[0]
 
@@ -44,7 +44,7 @@ def test_pay_rent_success(db_connection):
 
         # Оплата частичная (Полная сумма: 8000)
         cur.execute("CALL carsharing.pay_rent(%s, %s);", (rental_id, 2000)) # Оплачиваем 2000
-        cur.execute("SELECT total_amount, status FROM carsharing.rentals WHERE id=%s;", (rental_id))
+        cur.execute("SELECT total_amount, status FROM carsharing.rentals WHERE id=%s;", (rental_id,))
         total_amount, status = cur.fetchone()
         # Часть суммы внесена, аренда ещё не активна
         assert total_amount == 2000
@@ -52,7 +52,7 @@ def test_pay_rent_success(db_connection):
 
         # Оплата оставшейся суммы
         cur.execute("CALL carsharing.pay_rent(%s, %s);", (rental_id, 6000))  # Доплачиваем 6000
-        cur.execute("SELECT total_amount, status FROM carsharing.rentals WHERE id=%s;", (rental_id))
+        cur.execute("SELECT total_amount, status FROM carsharing.rentals WHERE id=%s;", (rental_id,))
         total_amount, status = cur.fetchone()
         assert total_amount == 8000
         # После полной оплаты аренда должна стать активной благодаря триггеру

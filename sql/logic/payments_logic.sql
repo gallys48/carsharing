@@ -78,5 +78,5 @@ create or replace trigger trg_activate_rental_when_fully_paid
 after update
 on carsharing.rentals
 for each row
-when (NEW.total_amount >= NEW.amount and OLD.status <> 'active')
+when (NEW.total_amount >= NEW.amount and OLD.status <> 'active' and NEW.amount <> 0)
 execute function carsharing.activate_rental_when_fully_paid();

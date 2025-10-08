@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
@@ -11,4 +11,15 @@ services:
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "5433:5432"
+
+  tests:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: carsharing
+      DB_USER: postgres
+      DB_PASSWORD: postgres

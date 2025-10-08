@@ -1,7 +1,4 @@
-drop table if exists carsharing.payments;
-drop table if exists carsharing.rentals;
-drop table if exists carsharing.customers;
-drop table if exists carsharing.cars;
+create schema if not exists carsharing;
 
 
 
@@ -15,21 +12,19 @@ create table if not exists carsharing.customers(
 	sys_status int not null default 1 --системный статус
 );
 
-alter table carsharing.cars
-add column sys_status int not null default 1 
 
 create table if not exists carsharing.cars(
 	id serial primary key, -- сурогатный ключ
 	vin varchar(17) unique not null, -- идентификатор ТС
 	maker text not null, -- производитель
 	model text not null, -- модель
-	color text not null, -- цвет
+	color text, -- цвет
 	year int, -- год выпуска
 	daily_rate numeric(10,2) not null default 1000.00, -- дневная ставка
 	is_available boolean not null default true, -- достуность авто
 	created_at timestamp default now(),-- время создания
 	updated_at timestamp, --время обновления
-	sys_status int not null default 1, --системный статус
+	sys_status int not null default 1 --системный статус
 );
 
 
@@ -58,5 +53,4 @@ create table if not exists carsharing.payments(
 	rental_id int not null references "carsharing".rentals(id) on delete cascade, -- id аренды
 	payments_date date not null default now(), -- дата оплаты
 	amount numeric(10,2) not null check (amount > 0) -- количество внесенных средств
-)
-
+);

@@ -27,13 +27,9 @@ begin
 	end if;
 
 	-- Проверяем, что машина доступна для аренды
-	if not exists (select 1 from carsharing.available_cars() where "ID" = r_car_id) then
+	if not exists (select 1 from carsharing.available_cars where id = r_car_id) then
 		raise exception 'Машина id % не доступна для аренды.', r_car_id;
 	end if;
-
-	-- Проверяем корректность дат
-	if r_expected_return_date < r_start_date then
-		raise exception 'Дата окончания аренды должна быть больше даты начала.';
 
 	-- Проверяем, что у пользователя нет активной аренды
 	if exists (select 1 from carsharing.rentals 
@@ -118,11 +114,10 @@ begin
 end;
 $$ language plpgsql;
 
-
 -- Возврат машины
 create or replace procedure carsharing.return_car(
-    r_rental_id int,
-    r_actual_return_date date
+    r_rental_id int, -- id аренды
+    r_actual_return_date date -- дата возвращения
 )
 as $$
 declare
@@ -134,10 +129,33 @@ declare
     v_extra_days int;
     v_final_amount numeric(10,2);
 begin
+	
+	-- Получаем нужные данные
+    select car_id, expected_return_date, daily_rate, amount, total_amount
+    into v_car_id, v_expected_return_date, v_daily_rate, v_amount, v_total_amount
+    from carsharing.rentals
+    where id = r_rental_id;
+	
     -- Проверяем, что аренда существует
     if not exists (select 1 from carsharing.rentals where id = r_rental_id) then
         raise exception 'Аренды с id % не существует.', r_rental_id;
     end if;
+	
+	-- Возврат до активации
+	if exists (select 1 from carsharing.rentals
+					where id = r_rental_id and status = 'reserved') then
+		raise notice 'Возврат выполнен до активации аренды';
+		update carsharing.rentals
+	    set 
+	        actual_return_date = r_actual_return_date,
+	        amount = 0,
+	        status = 'canceled'
+	    where id = r_rental_id;
+		update carsharing.cars
+	    set is_available = true
+	    where id = v_car_id;
+		return;
+	end if;
 
     -- Проверяем, что аренда активна
     if not exists (select 1 from carsharing.rentals
@@ -145,11 +163,6 @@ begin
         raise exception 'Аренда с id % не активна или уже завершена.', r_rental_id;
     end if;
 
-    -- Получаем нужные данные
-    select car_id, expected_return_date, daily_rate, amount, total_amount
-    into v_car_id, v_expected_return_date, v_daily_rate, v_amount, v_total_amount
-    from carsharing.rentals
-    where id = r_rental_id;
 
     -- Проверяем корректность даты
     if r_actual_return_date < (select start_date from carsharing.rentals where id = r_rental_id) then
@@ -173,6 +186,7 @@ begin
     set is_available = true
     where id = v_car_id;
 
+
     -- Проверяем, есть ли недоплата
     if v_total_amount < v_final_amount then
         raise notice 'Возврат выполнен. Необходимо доплатить % рублей.', v_final_amount - v_total_amount;
@@ -181,8 +195,11 @@ begin
 		raise notice 'Средства будут возвращены.';
     end if;
 
-end;
+end
 $$ language plpgsql;
+
+
+
 
 
 

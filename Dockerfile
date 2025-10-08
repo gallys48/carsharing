@@ -2,10 +2,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir psycopg[binary] pytest
 
-COPY ./tests ./tests
-COPY ./sql ./sql
+COPY tests/ tests/
 
-CMD ["pytest", "-v"]
+CMD ["sh", "-c", "sleep 5 && pytest tests/"]

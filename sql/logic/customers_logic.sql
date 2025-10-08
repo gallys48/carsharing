@@ -1,12 +1,8 @@
-drop procedure carsharing.create_customer;
-drop procedure carsharing.update_customer;
-drop procedure carsharing.delete_customer;
-
 -- Создание автомобиля
 create or replace procedure carsharing.create_customer(
-	c_fullname text,
-	c_email text,
-	c_phone text default null
+	c_fullname text, -- ФИО пользователя
+	c_email text, -- эл. почта пользователя
+	c_phone text default null -- телефон
 )
 as $$
 begin
@@ -22,12 +18,12 @@ begin
 end
 $$ language plpgsql;
 
--- Обновление информации о пользователе
+-- Обновление информации о пользователе по id
 create or replace procedure carsharing.update_customer(
-	c_id int,
-	c_fullname text default null,
-	c_email text default null,
-	c_phone text default null
+	c_id int, -- id пользователя
+	c_fullname text default null, -- ФИО пользователя (необяз.)
+	c_email text default null, -- эл.почта пользователя (необяз.)
+	c_phone text default null -- телефон пользователя (необяз.)
 )
 as $$
 begin
@@ -49,7 +45,7 @@ begin
 end
 $$ language plpgsql;
 
--- Удаление пользователя
+-- Удаление пользователя по id
 create or replace procedure carsharing.delete_customer(c_id int)
 as $$
 declare
@@ -62,8 +58,8 @@ begin
 	end if;
 	
 	-- Проверка существования оформленной аренды на пользовтеля
-	if exists (select 1 from carsharing.rentals where customer_id = c_id and status = 'active') then
-		raise exception 'Пользователя невозможного удалить. На него оформлена активная аренда.';
+	if exists (select 1 from carsharing.rentals where customer_id = c_id and (status = 'active' or status = 'reserved')) then
+		raise exception 'Пользователя невозможного удалить. На него оформлена или зарезервирована аренда.';
 	end if;
 	
 	select fullname, email into v_fullname, v_email

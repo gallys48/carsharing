@@ -22,7 +22,7 @@ def create_customer_and_car(cur):
     cur.execute("SELECT id FROM carsharing.customers WHERE email='test@mail.ru';")
     customer_id = cur.fetchone()[0]
 
-    cur.execute("CALL carsharing.create_car('VIN123', 'Toyota', 'Camry', 2020, 2000, TRUE);")
+    cur.execute("CALL carsharing.create_car('VIN123', 'Toyota', 'Camry', 'Red', 2020, 2000, TRUE);")
     cur.execute("SELECT id FROM carsharing.cars WHERE vin='VIN123';")
     car_id = cur.fetchone()[0]
 
@@ -45,7 +45,7 @@ def test_rent_car_success(db_connection):
         assert rental[4] == 'reserved'
 
         # Машина теперь недоступна
-        cur.execute("SELECT is_available FROM carsharing.cars WHERE id=%s;", (car_id))
+        cur.execute("SELECT is_available FROM carsharing.cars WHERE id=%s;", (car_id,))
         assert cur.fetchone()[0] == False
 
 # Аренда уже заняток машины
@@ -113,6 +113,8 @@ def test_return_car_success(db_connection):
         cur.execute("SELECT id FROM carsharing.rentals;")
         rental_id = cur.fetchone()[0]
 
+        cur.execute("UPDATE carsharing.rentals set status = 'active' where id = %s", (rental_id,))
+
         # Возвращаем машину
         return_date = end
         cur.execute("CALL carsharing.return_car(%s, %s);", (rental_id, return_date))
@@ -135,6 +137,8 @@ def test_return_car_before_start_date(db_connection):
         cur.execute("CALL carsharing.rent_car(%s, %s, %s, %s);", (customer_id, car_id, start, end))
         cur.execute("SELECT id FROM carsharing.rentals;")
         rental_id = cur.fetchone()[0]
+
+        cur.execute("UPDATE carsharing.rentals set status = 'active' where id = %s", (rental_id,))
 
         invalid_return = date(2025, 1, 1)
         with pytest.raises(psycopg.errors.RaiseException) as exc:

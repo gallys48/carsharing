@@ -1,9 +1,8 @@
 -- Выполняем сначала схему
-\i /docker-entrypoint-initdb.d/schema.sql
+\i /docker-entrypoint-initdb.d/logic/schema.sql
 
--- Далее процедуры и бизнес-логику по порядку
-\i /docker-entrypoint-initdb.d/logic/customers.sql
-\i /docker-entrypoint-initdb.d/logic/cars.sql
-\i /docker-entrypoint-initdb.d/logic/fleet.sql
-\i /docker-entrypoint-initdb.d/logic/rentals.sql
-\i /docker-entrypoint-initdb.d/logic/payments.sql
+-- Далее бизнес-логику по порядку
+\i /docker-entrypoint-initdb.d/logic/customers_logic.sql
+\i /docker-entrypoint-initdb.d/logic/cars_logic.sql
+\i /docker-entrypoint-initdb.d/logic/rentals_logic.sql
+\i /docker-entrypoint-initdb.d/logic/payments_logic.sql

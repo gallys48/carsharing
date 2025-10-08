@@ -1,14 +1,17 @@
 import pytest
+import os
 import psycopg
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def db_connection():
-    # создаём соединение с базой
     conn = psycopg.connect(
-        host="db",
-        dbname="carsharing",
-        user="postgres",
-        password="postgres"
+        host=os.getenv("DB_HOST", "localhost"),
+        port=os.getenv("DB_PORT", 5432),
+        dbname=os.getenv("DB_NAME", "carsharing"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres")
     )
-    yield conn
-    conn.close()
+    try:
+        yield conn
+    finally:
+        conn.close()
