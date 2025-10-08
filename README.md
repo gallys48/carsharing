@@ -31,8 +31,8 @@
 -	sys_status int not null default 1 --системный статус
 
 Таблица Машины
-- id (сурогатный ключ);
-- vin (идентификатор машины);
+-	id serial primary key, -- сурогатный ключ
+-	vin varchar(17) unique not null, -- идентификатор машины
 - maker text not null, -- производитель
 - model text not null, -- модель
 -	color text, -- цвет
@@ -42,6 +42,20 @@
 -	created_at timestamp default now(),-- время создания
 -	updated_at timestamp, --время обновления
 -	sys_status int not null default 1 --системный статус
+
+Таблица Аренды
+-	id serial primary key, -- сурогатный ключ
+-	customer_id int not null references carsharing.customers(id) on delete cascade, -- id покупателя
+-	car_id int not null references carsharing.cars(id) on delete cascade, -- id машины
+-	start_date date default now(), -- дата начала аренды
+-	expected_return_date date not null, -- дата окончания(предварительная)
+-	actual_return_date date, -- дата окончания(по факту)
+-	daily_rate numeric(10,2) not null, -- дневная ставка(по факту)
+-	amount numeric(12,2) default 0, -- всего к оплате
+-	total_amount numeric(12,2) default 0, -- сколько оплачено на данный момент
+-	status rental_status not null default 'reserved', -- статус аренды (изначально машина резервируется для аренды)
+-	create_at timestamp default now(), -- время создания
+-	updated_at timestamp default now(), -- время обновления
 ---
 
 ## Структура проекта
@@ -127,6 +141,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
