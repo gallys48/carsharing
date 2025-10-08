@@ -151,7 +151,7 @@ docker compose up -d --build
 | User | postgres |
 |Password| postgres |
 
-Порт 5433 прокидывается на случай занятого 5432.
+Порт 5433 прокидывается на случай, если 5432 занят.
 
 Можно подключиться через DBeaver, pgAdmin или в терминале:
 
@@ -159,6 +159,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
