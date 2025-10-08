@@ -28,9 +28,9 @@
 
 ![Схема БД](images/schema.png)
 
-## Описание схемы
+## Описание сущностей
 
-Таблица Пользователь
+Пользователь
 -	id serial primary key, -- сурогатный ключ
 -	fullname text not null, -- имя
 -	phone varchar(10), -- телефон
@@ -39,7 +39,7 @@
 -	updated_at timestamp, -- время обновления
 -	sys_status int not null. -- системный статус
 
-Таблица Машины
+Машина
 -	id serial primary key, -- сурогатный ключ
 -	vin varchar(17) not null, -- идентификатор машины
 - maker text not null, -- производитель
@@ -52,7 +52,7 @@
 -	updated_at timestamp, --время обновления
 -	sys_status int not null. --системный статус
 
-Таблица Аренды
+Аренда
 -	id serial primary key, -- сурогатный ключ
 -	customer_id int not null, -- id покупателя (внешний ключ)
 -	car_id int not null, -- id машины (внешний ключ)
@@ -66,7 +66,7 @@
 -	create_at timestamp, -- время создания
 -	updated_at timestamp, -- время обновления
 
-Таблица Платежи
+Оплата
 -	id serial primary key, -- сурогатный ключ
 -	rental_id int not null, -- id аренды (внешний ключ)
 -	payments_date date not null, -- дата оплаты
@@ -160,6 +160,17 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+# Функционал приложения
+
+Весь функционал реализован с помощью процедур.
+Процедура выполняется командой `CALL`.
+
+Например:
+```bash
+CALL carsharing.create_car('001', 'Toyota', 'Camry', 'Red', 2020, 2000, true)
+```
+Все процедуры и их описание находятся в папке sql в файлах с названием 'сущность'_logic.sql.
+
 
 
 
