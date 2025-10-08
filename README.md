@@ -25,37 +25,43 @@
 -	id serial primary key, --сурогатный ключ
 -	fullname text not null, --имя
 -	phone varchar(10), --телефон
--	email text unique not null, --почта
--	created_at timestamp default now(), --время создания
+-	email text not null, --почта
+-	created_at timestamp, --время создания
 -	updated_at timestamp, --время обновления
--	sys_status int not null default 1 --системный статус
+-	sys_status int not null--системный статус
 
 Таблица Машины
 -	id serial primary key, -- сурогатный ключ
--	vin varchar(17) unique not null, -- идентификатор машины
+-	vin varchar(17) not null, -- идентификатор машины
 - maker text not null, -- производитель
 - model text not null, -- модель
 -	color text, -- цвет
 -	year int, -- год выпуска
--	daily_rate numeric(10,2) not null default 1000.00, -- дневная ставка
--	is_available boolean not null default true, -- достуность авто
--	created_at timestamp default now(),-- время создания
+-	daily_rate numeric(10,2) not null, -- дневная ставка
+-	is_available boolean not null, -- достуность авто
+-	created_at timestamp,-- время создания
 -	updated_at timestamp, --время обновления
--	sys_status int not null default 1 --системный статус
+-	sys_status int not null--системный статус
 
 Таблица Аренды
 -	id serial primary key, -- сурогатный ключ
--	customer_id int not null references carsharing.customers(id) on delete cascade, -- id покупателя
--	car_id int not null references carsharing.cars(id) on delete cascade, -- id машины
--	start_date date default now(), -- дата начала аренды
+-	customer_id int not null, -- id покупателя (внешний ключ)
+-	car_id int not null, -- id машины (внешний ключ)
+-	start_date date, -- дата начала аренды
 -	expected_return_date date not null, -- дата окончания(предварительная)
 -	actual_return_date date, -- дата окончания(по факту)
 -	daily_rate numeric(10,2) not null, -- дневная ставка(по факту)
--	amount numeric(12,2) default 0, -- всего к оплате
--	total_amount numeric(12,2) default 0, -- сколько оплачено на данный момент
--	status rental_status not null default 'reserved', -- статус аренды (изначально машина резервируется для аренды)
--	create_at timestamp default now(), -- время создания
--	updated_at timestamp default now(), -- время обновления
+-	amount numeric(12,2), -- всего к оплате
+-	total_amount numeric(12,2, -- сколько оплачено на данный момент
+-	status rental_status not null, -- статус аренды (rental_status - отдельно созданный тип)
+-	create_at timestamp, -- время создания
+-	updated_at timestamp, -- время обновления
+
+Таблица Платежи
+-	id serial primary key, -- сурогатный ключ
+-	rental_id int not null, -- id аренды (внешний ключ)
+-	payments_date date not null, -- дата оплаты
+-	amount numeric(10,2) not null -- количество внесенных средств
 ---
 
 ## Структура проекта
@@ -141,6 +147,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
