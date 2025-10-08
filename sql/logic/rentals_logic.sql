@@ -151,8 +151,10 @@ begin
 	        amount = 0,
 	        status = 'canceled'
 	    where id = r_rental_id;
+		
 		update carsharing.cars
-	    set is_available = true
+	    set 
+			is_available = true
 	    where id = v_car_id;
 		return;
 	end if;
