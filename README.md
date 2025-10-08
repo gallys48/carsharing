@@ -20,7 +20,7 @@
 - Создание, изменение, удаление машины;
 - Создание, продление, возврат аренды;
 - Оплата аренды;
-- 
+
 ---
 ## Схема базы данных
 
@@ -156,6 +156,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
