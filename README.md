@@ -6,7 +6,8 @@
 ---
 
 ## Структура проекта
-
+```markdown
+```text
 carsharing/
 ├── docker-compose.yml
 ├── Dockerfile
@@ -25,3 +26,4 @@ carsharing/
 │ ├── test_rentals.py
 │ └── test_payments.py
 └── README.md
+---
