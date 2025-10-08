@@ -69,6 +69,8 @@
 carsharing/
 ├── docker-compose.yml
 ├── Dockerfile
+├── images
+│ ├── schema.png
 ├── sql/
 │ ├── logic/
 │ │ ├── customers_logic.sql
@@ -147,6 +149,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
