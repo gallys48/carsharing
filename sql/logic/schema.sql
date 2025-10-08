@@ -3,13 +3,13 @@ create schema if not exists carsharing;
 
 
 create table if not exists carsharing.customers(
-	id serial primary key, --сурогатный ключ
-	fullname text not null, --имя
-	phone varchar(10), --телефон
-	email text unique not null, --почта
-	created_at timestamp default now(), --время создания
-	updated_at timestamp, --время обновления
-	sys_status int not null default 1 --системный статус
+	id serial primary key, -- сурогатный ключ
+	fullname text not null, -- имя
+	phone varchar(10), -- телефон
+	email text unique not null, -- почта
+	created_at timestamp default now(), -- время создания
+	updated_at timestamp, -- время обновления
+	sys_status int not null default 1 -- системный статус
 );
 
 
@@ -23,8 +23,8 @@ create table if not exists carsharing.cars(
 	daily_rate numeric(10,2) not null default 1000.00, -- дневная ставка
 	is_available boolean not null default true, -- достуность авто
 	created_at timestamp default now(),-- время создания
-	updated_at timestamp, --время обновления
-	sys_status int not null default 1 --системный статус
+	updated_at timestamp, -- время обновления
+	sys_status int not null default 1 -- системный статус
 );
 
 
@@ -43,7 +43,7 @@ create table if not exists carsharing.rentals(
 	total_amount numeric(12,2) default 0, -- сколько оплачено на данный момент
 	status rental_status not null default 'reserved', -- статус аренды (изначально машина резервируется для аренды)
 	create_at timestamp default now(), -- время создания
-	updated_at timestamp default now(), -- время обновления
+	updated_at timestamp default now() -- время обновления
 );
 
 
