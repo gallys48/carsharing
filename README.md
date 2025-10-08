@@ -22,13 +22,13 @@
 ## Описание схемы
 
 Таблица Пользователь
--	id serial primary key, --сурогатный ключ
--	fullname text not null, --имя
--	phone varchar(10), --телефон
--	email text not null, --почта
--	created_at timestamp, --время создания
--	updated_at timestamp, --время обновления
--	sys_status int not null--системный статус
+-	id serial primary key, -- сурогатный ключ
+-	fullname text not null, -- имя
+-	phone varchar(10), -- телефон
+-	email text not null, -- почта
+-	created_at timestamp, -- время создания
+-	updated_at timestamp, -- время обновления
+-	sys_status int not null. -- системный статус
 
 Таблица Машины
 -	id serial primary key, -- сурогатный ключ
@@ -41,7 +41,7 @@
 -	is_available boolean not null, -- достуность авто
 -	created_at timestamp,-- время создания
 -	updated_at timestamp, --время обновления
--	sys_status int not null--системный статус
+-	sys_status int not null. --системный статус
 
 Таблица Аренды
 -	id serial primary key, -- сурогатный ключ
@@ -147,6 +147,7 @@ docker compose up -d --build
 docker exec -it carsharing_db psql -U postgres -d carsharing
 ```
 ---
+
 
 
 
